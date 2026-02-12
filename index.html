@@ -1,373 +1,163 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>منصة الفهم القرائي</title>
-  <style>
-    :root{
-      --bg1:#0ea5e9; --bg2:#22c55e; --card:#ffffff; --text:#0f172a;
-      --muted:#64748b; --primary:#2563eb; --good:#16a34a; --bad:#dc2626;
-      --shadow:0 12px 35px rgba(0,0,0,.16); --radius:18px;
-    }
-    body{
-      margin:0; font-family: Arial, sans-serif;
-      background: linear-gradient(135deg,var(--bg1),var(--bg2));
-      min-height:100vh; display:flex; align-items:center; justify-content:center;
-      padding:18px; color:#fff;
-    }
-    .topname{position:fixed;top:10px;left:0;right:0;text-align:center;font-size:14px;opacity:.95;pointer-events:none;}
-    .wrap{width:min(900px,100%);}
-    .card{
-      background:var(--card); color:var(--text);
-      border-radius:var(--radius); box-shadow:var(--shadow);
-      padding:18px;
-    }
-    h1{margin:0 0 8px; color:var(--primary); text-align:center;}
-    .sub{margin:0 0 14px; text-align:center; color:var(--muted); font-size:14px;}
-    .grid{display:grid; grid-template-columns: 1fr 1fr; gap:12px;}
-    @media (max-width:800px){ .grid{grid-template-columns:1fr;} }
+<div class="topbar" style="text-align:center; padding:12px 10px; color:#eaf2ff; font-size:14px;">
+  إعداد المعلم: وليد مريع
+</div>
 
-    .box{
-      background:#f8fafc; border:1px solid #e5e7eb;
-      border-radius:16px; padding:14px;
-    }
-    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center;}
-    input{
-      padding:10px 12px; border-radius:12px; border:1px solid #e5e7eb;
-      min-width:260px; font-size:14px;
-      outline:none;
-    }
-    .btn{
-      border:none; border-radius:12px; padding:10px 14px;
-      cursor:pointer; font-weight:800; font-size:14px;
-    }
-    .btnPrimary{background:var(--primary); color:#fff;}
-    .btnGhost{background:#eef2ff; color:#1e3a8a;}
-    .story{
-      background:#fff; border:1px dashed #cbd5e1; border-radius:14px;
-      padding:14px; line-height:1.9; font-size:16px;
-    }
-    .q{margin:10px 0 8px; font-weight:900; text-align:center;}
-    .answers{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
-    .answerBtn{
-      background:var(--primary); color:#fff; border:none;
-      border-radius:12px; padding:10px 14px;
-      cursor:pointer; min-width:160px; font-weight:900;
-    }
-    .answerBtn.secondary{background:#0ea5e9;}
-    .status{margin-top:10px; text-align:center; font-weight:900;}
-    .status.good{color:var(--good);} .status.bad{color:var(--bad);}
-    .kpis{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px;}
-    .pill{
-      background:#fff; border:1px solid #e5e7eb; border-radius:999px;
-      padding:8px 12px; font-size:13px;
-    }
-    .muted{color:var(--muted); font-weight:800;}
-    .hidden{display:none;}
-  </style>
-</head>
-<body>
+<div class="box" style="max-width:720px; margin:0 auto; background:#fff; color:#222; padding:22px; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.15);">
+  <h1 style="margin:0 0 6px; color:#1e40af;">📘 منصة الفهم القرائي</h1>
+  <p style="margin:0 0 14px; color:#334155;">اكتب اسمك ثم ابدأ التحدي 👇</p>
 
-<div class="topname">إعداد المعلم: وليد مريع</div>
-
-<div class="wrap">
-  <div class="card">
-    <h1>📚 منصة الفهم القرائي</h1>
-    <p class="sub">اكتب اسمك ثم ابدأ الاختبار. عند الإنهاء تُرسل النتيجة تلقائيًا للمعلم ✅</p>
-
-    <div class="grid">
-      <!-- الدخول -->
-      <div class="box">
-        <h3 style="margin:0 0 10px; text-align:center;">1) بيانات الطالب</h3>
-        <div class="row">
-          <input id="studentName" placeholder="اكتب اسمك الثلاثي هنا" />
-          <button class="btn btnPrimary" id="startBtn">بدء الاختبار</button>
-        </div>
-        <p class="sub" style="margin-top:10px;">⚠️ اكتب اسمك صحيحًا (سيظهر في سجل النتائج).</p>
-
-        <div class="kpis">
-          <div class="pill">الطالب: <span class="muted" id="who">-</span></div>
-          <div class="pill">الوقت: <span class="muted" id="timer">0</span> ث</div>
-        </div>
-      </div>
-
-      <!-- النتائج + إرسال -->
-      <div class="box">
-        <h3 style="margin:0 0 10px; text-align:center;">2) النتيجة</h3>
-        <div class="kpis">
-          <div class="pill">النقاط: <span class="muted" id="score">0</span></div>
-          <div class="pill">السؤال: <span class="muted" id="qNo">0</span>/<span class="muted" id="total">0</span></div>
-          <div class="pill">النسبة: <span class="muted" id="pct">0</span>%</div>
-        </div>
-
-        <div class="row" style="margin-top:12px;">
-          <button class="btn btnGhost" id="resetBtn">إعادة</button>
-          <button class="btn btnPrimary" id="finishBtn" disabled>إنهاء وإرسال النتيجة</button>
-        </div>
-
-        <div class="status" id="sendStatus"></div>
-        <p class="sub" style="margin-top:10px;">بعد الإرسال سيظهر لك "تم الاختبار" ✅</p>
-      </div>
-    </div>
-
-    <!-- الاختبار -->
-    <div class="box" style="margin-top:12px;">
-      <h3 style="margin:0 0 10px; text-align:center;">3) الاختبار</h3>
-      <div class="story" id="passage">اضغط "بدء الاختبار" لعرض النص.</div>
-      <div class="q" id="question"></div>
-
-      <div class="answers">
-        <button class="answerBtn" id="a1" disabled>...</button>
-        <button class="answerBtn secondary" id="a2" disabled>...</button>
-      </div>
-
-      <div class="status" id="status"></div>
-
-      <div class="row" style="margin-top:12px;">
-        <button class="btn btnPrimary" id="nextBtn" disabled>التالي</button>
-      </div>
-    </div>
-
+  <!-- إدخال الاسم -->
+  <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; margin:10px 0 18px;">
+    <input id="studentName" type="text" placeholder="اكتب اسمك هنا..."
+      style="padding:12px 12px; border:1px solid #cbd5e1; border-radius:10px; min-width:240px; font-size:16px; outline:none;">
+    <button id="startBtn"
+      style="padding:12px 14px; border:none; border-radius:10px; background:#2563eb; color:#fff; font-size:16px; cursor:pointer;">
+      ✅ ابدأ الاختبار
+    </button>
   </div>
+
+  <!-- منطقة التحدي -->
+  <div id="quizArea" style="display:none;">
+    <p style="margin:0 0 8px; color:#0f172a;">اقرأ الجملة التالية ثم اختر الإجابة الصحيحة:</p>
+    <div id="questionBox" style="background:#f1f5f9; padding:14px; border-radius:12px; margin-bottom:12px;">
+      <div id="sentence" style="font-size:18px; margin-bottom:8px;"></div>
+      <div id="question" style="color:#334155;"></div>
+    </div>
+
+    <div id="choices" style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;"></div>
+
+    <div style="margin-top:14px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+      <div id="progress" style="color:#334155;">السؤال 1 / 1</div>
+      <div id="result" style="font-weight:bold;"></div>
+    </div>
+  </div>
+
+  <!-- سجل الاختبارات (يظهر لك أنك تعرف من اختبر على نفس الجهاز) -->
+  <hr style="margin:18px 0; border:none; border-top:1px solid #e2e8f0;">
+  <h3 style="margin:0 0 8px; color:#0f172a;">📌 سجل من اختبر (على هذا الجهاز)</h3>
+  <ul id="logList" style="margin:0; padding:0 18px; color:#334155;"></ul>
 </div>
 
 <script>
-  // ✅ ضع رابط Web App هنا:
-  const WEB_APP_URL = "YOUR_WEB_APP_URL_HERE";
-
-  // بنك الأسئلة (زدها كما تريد)
+  // 🔥 هنا الأسئلة: أضف كما تريد
   const questions = [
     {
-      passage: "عاد خالد من المدرسة متعبًا، فجلس قليلًا ثم بدأ يراجع دروسه. بعد ذلك جهّز حقيبته لليوم التالي قبل أن ينام.",
-      question: "ما الذي نستنتجه عن خالد؟",
-      choices: ["منظم ويستعد مبكرًا", "لا يحب الدراسة"],
+      sentence: "قرأ خالد القصة بسرعة وفهم أحداثها.",
+      question: 'ما معنى كلمة "أحداثها"؟',
+      choices: ["وقائعها", "عناوينها"],
       correctIndex: 0
     },
     {
-      passage: "تعاون الطلاب في تنظيف الفصل بعد الحصة، فصار المكان مرتبًا ونظيفًا وشعر الجميع بالسرور.",
-      question: "ما الفكرة الرئيسة للنص؟",
-      choices: ["التعاون ينظّم المكان", "اللعب في الفصل ممتع"],
-      correctIndex: 0
+      sentence: "عاد الطالب إلى بيته مسرورًا بعد التفوق.",
+      question: 'ما معنى كلمة "مسرورًا"؟',
+      choices: ["حزينًا", "فرحًا"],
+      correctIndex: 1
     },
     {
-      passage: "قرأَت ليان إعلانًا يقول: اشرب هذا العصير كل يوم وستحصل على أعلى الدرجات دون دراسة. فكّرت ثم قررت أن تبحث عن دليل قبل أن تصدق.",
-      question: "ما التصرف الذي يدل على تفكير ناقد؟",
-      choices: ["البحث عن دليل قبل التصديق", "تصديق الإعلان فورًا"],
-      correctIndex: 0
-    },
-    {
-      passage: "زرع فهد شتلةً صغيرة وسقاها يوميًا، وبعد مدةٍ كبرت وصارت شجرةً جميلة.",
-      question: "ما سبب نمو الشتلة؟",
-      choices: ["سقاها يوميًا", "تركها دون عناية"],
-      correctIndex: 0
-    },
-    {
-      passage: "عندما اختلف صديقان، حاولا التحدث بهدوء حتى وصلا لحلٍّ يرضيهما.",
-      question: "أفضل طريقة لحل الخلاف هي:",
-      choices: ["الحوار الهادئ", "الصراخ والغضب"],
+      sentence: "نظّمت المدرسة رحلةً مفيدة للطلاب.",
+      question: 'ما معنى كلمة "نظّمت"؟',
+      choices: ["رتّبت", "أفسدت"],
       correctIndex: 0
     }
   ];
 
-  const $ = (id)=>document.getElementById(id);
+  const nameInput = document.getElementById("studentName");
+  const startBtn = document.getElementById("startBtn");
+  const quizArea = document.getElementById("quizArea");
+  const sentenceEl = document.getElementById("sentence");
+  const questionEl = document.getElementById("question");
+  const choicesEl = document.getElementById("choices");
+  const progressEl = document.getElementById("progress");
+  const resultEl = document.getElementById("result");
+  const logList = document.getElementById("logList");
 
-  let state = {
-    started:false,
-    name:"",
-    idx:0,
-    score:0,
-    answered:false,
-    startTs:0,
-    timerInt:null
+  let currentIndex = 0;
+  let studentName = "";
+
+  // سجل محلي على نفس الجهاز (localStorage)
+  function loadLog() {
+    const log = JSON.parse(localStorage.getItem("quiz_log") || "[]");
+    logList.innerHTML = "";
+    log.slice().reverse().forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = `${item.name} — ${item.time} — النتيجة: ${item.score}/${item.total}`;
+      logList.appendChild(li);
+    });
+  }
+
+  function saveLog(entry) {
+    const log = JSON.parse(localStorage.getItem("quiz_log") || "[]");
+    log.push(entry);
+    localStorage.setItem("quiz_log", JSON.stringify(log));
+    loadLog();
+  }
+
+  function renderQuestion() {
+    const q = questions[currentIndex];
+    sentenceEl.textContent = q.sentence;
+    questionEl.textContent = q.question;
+    progressEl.textContent = `السؤال ${currentIndex + 1} / ${questions.length}`;
+    resultEl.textContent = "";
+
+    choicesEl.innerHTML = "";
+    q.choices.forEach((choice, idx) => {
+      const btn = document.createElement("button");
+      btn.textContent = choice;
+      btn.style.cssText = "padding:10px 14px; border:none; border-radius:10px; background:#2563eb; color:#fff; cursor:pointer; font-size:15px;";
+      btn.onclick = () => handleAnswer(idx);
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  let score = 0;
+
+  function handleAnswer(selectedIndex) {
+    const q = questions[currentIndex];
+    if (selectedIndex === q.correctIndex) {
+      resultEl.textContent = "✅ إجابة صحيحة";
+      resultEl.style.color = "#16a34a";
+      score++;
+    } else {
+      resultEl.textContent = "❌ إجابة غير صحيحة";
+      resultEl.style.color = "#dc2626";
+    }
+
+    // انتقل للسؤال التالي بعد نصف ثانية
+    setTimeout(() => {
+      currentIndex++;
+      if (currentIndex < questions.length) {
+        renderQuestion();
+      } else {
+        finishQuiz();
+      }
+    }, 600);
+  }
+
+  function finishQuiz() {
+    choicesEl.innerHTML = "";
+    sentenceEl.textContent = `انتهى الاختبار يا ${studentName} 🎉`;
+    questionEl.textContent = `نتيجتك: ${score} / ${questions.length}`;
+    resultEl.textContent = "";
+
+    const now = new Date();
+    const time = now.toLocaleString("ar-SA");
+    saveLog({ name: studentName, time, score, total: questions.length });
+
+    // إعادة ضبط
+    currentIndex = 0;
+    score = 0;
+  }
+
+  startBtn.onclick = () => {
+    const val = nameInput.value.trim();
+    if (!val) {
+      alert("اكتب اسمك أولاً 🙂");
+      return;
+    }
+    studentName = val;
+    quizArea.style.display = "block";
+    renderQuestion();
   };
 
-  function deviceInfo(){
-    return navigator.userAgent || "";
-  }
-
-  function setStatus(el, msg, type){
-    el.textContent = msg;
-    el.className = "status" + (type ? (" " + type) : "");
-  }
-
-  function updateTop(){
-    $("who").textContent = state.name || "-";
-    $("score").textContent = state.score;
-    $("qNo").textContent = state.started ? (state.idx + 1) : 0;
-    $("total").textContent = questions.length;
-    const pct = Math.round((state.score / questions.length) * 100);
-    $("pct").textContent = isFinite(pct) ? pct : 0;
-  }
-
-  function renderQ(){
-    const q = questions[state.idx];
-    $("passage").textContent = q.passage;
-    $("question").textContent = "❓ " + q.question;
-    $("a1").textContent = q.choices[0];
-    $("a2").textContent = q.choices[1];
-
-    $("a1").disabled = false;
-    $("a2").disabled = false;
-    $("nextBtn").disabled = true;
-    state.answered = false;
-    setStatus($("status"), "", "");
-    updateTop();
-
-    // زر إنهاء يتفعّل فقط بعد آخر سؤال
-    $("finishBtn").disabled = state.idx !== questions.length - 1;
-  }
-
-  function answer(choice){
-    if(!state.started || state.answered) return;
-    state.answered = true;
-
-    const q = questions[state.idx];
-    const correct = choice === q.correctIndex;
-    if(correct){
-      state.score += 1;
-      setStatus($("status"), "✅ إجابة صحيحة!", "good");
-    }else{
-      setStatus($("status"), "❌ إجابة غير صحيحة", "bad");
-    }
-
-    $("a1").disabled = true;
-    $("a2").disabled = true;
-    $("nextBtn").disabled = (state.idx >= questions.length - 1);
-
-    // لو مو آخر سؤال: فعّل التالي
-    if(state.idx < questions.length - 1) $("nextBtn").disabled = false;
-
-    // لو آخر سؤال: فعّل إنهاء
-    if(state.idx === questions.length - 1) $("finishBtn").disabled = false;
-
-    updateTop();
-  }
-
-  function startTimer(){
-    clearInterval(state.timerInt);
-    state.startTs = Date.now();
-    state.timerInt = setInterval(()=>{
-      const secs = Math.floor((Date.now() - state.startTs)/1000);
-      $("timer").textContent = secs;
-    }, 500);
-  }
-
-  function stopTimer(){
-    clearInterval(state.timerInt);
-    state.timerInt = null;
-  }
-
-  function start(){
-    const name = $("studentName").value.trim();
-    if(!name){
-      alert("اكتب اسمك أولًا ✅");
-      return;
-    }
-    state.started = true;
-    state.name = name;
-    state.idx = 0;
-    state.score = 0;
-    $("startBtn").disabled = true;
-    $("studentName").disabled = true;
-
-    $("nextBtn").disabled = false;
-    $("finishBtn").disabled = true;
-
-    startTimer();
-    renderQ();
-  }
-
-  function next(){
-    if(!state.started) return;
-    if(state.idx < questions.length - 1){
-      state.idx += 1;
-      renderQ();
-    }
-  }
-
-  async function finishAndSend(){
-    if(!state.started) return;
-
-    // لازم تكون خلصت آخر سؤال (احتياط)
-    if(state.idx !== questions.length - 1 || !state.answered){
-      alert("أجب عن السؤال الأخير أولًا ✅");
-      return;
-    }
-
-    stopTimer();
-    const durationSeconds = Number($("timer").textContent || 0);
-
-    setStatus($("sendStatus"), "⏳ جارٍ الإرسال...", "");
-
-    const payload = {
-      studentName: state.name,
-      score: state.score,
-      total: questions.length,
-      durationSeconds,
-      deviceInfo: deviceInfo()
-    };
-
-    try{
-      const res = await fetch(WEB_APP_URL, {
-        method: "POST",
-        headers: {"Content-Type":"text/plain;charset=utf-8"},
-        body: JSON.stringify(payload)
-      });
-      const out = await res.json().catch(()=>({ok:false}));
-
-      if(out && out.ok){
-        setStatus($("sendStatus"), "✅ تم الاختبار وإرسال النتيجة بنجاح!", "good");
-
-        // قفل الأزرار
-        $("a1").disabled = true;
-        $("a2").disabled = true;
-        $("nextBtn").disabled = true;
-        $("finishBtn").disabled = true;
-
-      }else{
-        setStatus($("sendStatus"), "❌ لم يتم الإرسال. تأكد من رابط Web App وإعداداته.", "bad");
-      }
-    }catch(e){
-      setStatus($("sendStatus"), "❌ خطأ اتصال. جرّب مرة أخرى.", "bad");
-    }
-  }
-
-  function resetAll(){
-    stopTimer();
-    state = {started:false,name:"",idx:0,score:0,answered:false,startTs:0,timerInt:null};
-
-    $("studentName").value = "";
-    $("studentName").disabled = false;
-    $("startBtn").disabled = false;
-
-    $("passage").textContent = "اضغط \"بدء الاختبار\" لعرض النص.";
-    $("question").textContent = "";
-    $("a1").textContent = "...";
-    $("a2").textContent = "...";
-    $("a1").disabled = true;
-    $("a2").disabled = true;
-    $("nextBtn").disabled = true;
-    $("finishBtn").disabled = true;
-
-    $("timer").textContent = "0";
-    setStatus($("status"), "", "");
-    setStatus($("sendStatus"), "", "");
-    updateTop();
-  }
-
-  // أحداث
-  $("startBtn").addEventListener("click", start);
-  $("nextBtn").addEventListener("click", next);
-  $("finishBtn").addEventListener("click", finishAndSend);
-  $("resetBtn").addEventListener("click", resetAll);
-
-  $("a1").addEventListener("click", ()=>answer(0));
-  $("a2").addEventListener("click", ()=>answer(1));
-
-  // init
-  updateTop();
+  loadLog();
 </script>
-
-</body>
-</html>
